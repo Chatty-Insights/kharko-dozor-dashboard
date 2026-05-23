@@ -3,9 +3,11 @@ import { userProfileSchema } from "@/api-client/user/schemas";
 import { deleteAccountSchema, updateProfileSchema } from "@/api-client/user/schemas";
 import { prisma } from "@/server/db/client";
 import { HttpError } from "@/server/http-error";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { NextResponse } from "next/server";
 import { transferOrganizationOwnership } from "./_helpers/transfer-ownership";
+
+const log = getLogger("api-user");
 
 /** Powers the settings page — connect/disconnect/rename affordances over linked accounts + passkeys. */
 export const GET = withAuth(async (req, user) => {
@@ -56,7 +58,7 @@ export const PATCH = withAuth(async (req, user) => {
     data: { name: body.name },
   });
 
-  log.info("user:rename:ok", { userId: user.id, name: body.name });
+  log.info({ userId: user.id, name: body.name }, "user:rename:ok");
 
   return new Response(null, { status: 204 });
 });
@@ -97,10 +99,13 @@ export const DELETE = withAuth(async (req, user) => {
     return { soloOrgsDeleted: soloOrgIds.length, sharedOrgsTransferred: sharedOrgs.length };
   });
 
-  log.info("user:delete:ok", {
-    userId: user.id,
-    summary,
-  });
+  log.info(
+    {
+      userId: user.id,
+      summary,
+    },
+    "user:delete:ok",
+  );
 
   return new Response(null, { status: 204 });
 });

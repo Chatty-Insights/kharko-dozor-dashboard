@@ -1,10 +1,12 @@
 import { ONE_DAY_MS, SESSION_RETENTION_DAYS } from "@/lib/time";
 import { prisma } from "@/server/db/client";
 import { env } from "@/server/env";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { REAL_SESSION_FILTER } from "@/server/sessions/real-session-filter";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+const log = getLogger("cron-daily-cleanup");
 
 /**
  * Inline — Vercel Cron reads status codes + stdout, not the JSON body, so
@@ -45,7 +47,7 @@ export async function GET(req: Request) {
   if (env.CRON_SECRET) {
     const auth = req.headers.get("authorization");
     if (auth !== `Bearer ${env.CRON_SECRET}`) {
-      log.warn("cron:cleanup:unauthorized", { hasHeader: Boolean(auth) });
+      log.warn({ hasHeader: Boolean(auth) }, "cron:cleanup:unauthorized");
       return new NextResponse("Unauthorized", { status: 401 });
     }
   }
@@ -103,7 +105,7 @@ export async function GET(req: Request) {
     organizations: orgsDeleted,
   });
 
-  log.info("cron:cleanup:summary", { summary });
+  log.info({ summary }, "cron:cleanup:summary");
 
   return NextResponse.json(summary);
 }

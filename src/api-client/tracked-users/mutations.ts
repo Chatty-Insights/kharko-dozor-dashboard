@@ -1,5 +1,5 @@
-import { apiFetch } from "@/api-client/_lib/fetch";
-import { routes } from "@/api-client/_lib/routes";
+import { apiFetch } from "@/api-client/fetch";
+import { routes } from "@/api-client/routes";
 import { trackedUserQueries } from "@/api-client/tracked-users/queries";
 import type { UpdateDisplayNameInput } from "@/api-client/tracked-users/schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";

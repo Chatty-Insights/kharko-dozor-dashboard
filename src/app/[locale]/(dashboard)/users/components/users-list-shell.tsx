@@ -21,7 +21,7 @@ import {
   useTrackedUsersSuspenseInfiniteQuery,
 } from "@/api-client/tracked-users/queries";
 import type { UserActivityStatus } from "@/api-client/tracked-users/domain";
-import { flattenCursorPages } from "@/api-client/_lib/pagination";
+import { flattenCursorPages } from "@/api-client/pagination";
 import { EmptyState } from "./empty-state";
 import { FilterBar } from "./filter-bar";
 import { LoadMore } from "./load-more";

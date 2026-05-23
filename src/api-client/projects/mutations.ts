@@ -1,6 +1,6 @@
-import { apiFetch } from "@/api-client/_lib/fetch";
+import { apiFetch } from "@/api-client/fetch";
 import { projectKeys } from "@/api-client/projects/keys";
-import { routes } from "@/api-client/_lib/routes";
+import { routes } from "@/api-client/routes";
 import type {
   CreateProjectInput,
   Project,

@@ -1,7 +1,9 @@
 import { withAuth } from "@/app/api/_lib/with-auth";
 import { updateLocaleSchema } from "@/api-client/user/schemas";
 import { prisma } from "@/server/db/client";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
+
+const log = getLogger("api-user-locale");
 
 /**
  * Server only writes — session refresh + URL swap are client-side in
@@ -17,7 +19,7 @@ export const PATCH = withAuth(async (req, user) => {
     data: { locale: body.locale },
   });
 
-  log.info("user:locale:change:ok", { userId: user.id, locale: body.locale });
+  log.info({ userId: user.id, locale: body.locale }, "user:locale:change:ok");
 
   return new Response(null, { status: 204 });
 });

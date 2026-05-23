@@ -1,9 +1,11 @@
 import "server-only";
 import { orgAvatarUrl } from "@/lib/avatar";
 import { prisma } from "@/server/db/client";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import type { NextAuthConfig } from "next-auth";
 import { randomUUID } from "node:crypto";
+
+const log = getLogger("auth-events");
 
 /**
  * `createUser` provisions a Personal Space org so the JWT callback's active-org
@@ -19,7 +21,7 @@ export const authEvents: NextAuthConfig["events"] = {
       where: { createdById: userId, type: "PERSONAL" },
     });
     if (existing) {
-      log.debug("auth:create_user:personal_space_exists", { userId });
+      log.debug({ userId }, "auth:create_user:personal_space_exists");
       return;
     }
 
@@ -35,10 +37,13 @@ export const authEvents: NextAuthConfig["events"] = {
       },
     });
 
-    log.info("auth:create_user:ok", {
-      userId,
-      personalOrgId: personalOrg.id,
-      email: user.email ?? null,
-    });
+    log.info(
+      {
+        userId,
+        personalOrgId: personalOrg.id,
+        email: user.email ?? null,
+      },
+      "auth:create_user:ok",
+    );
   },
 };

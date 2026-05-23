@@ -3,8 +3,10 @@ import { sessionDetailSchema } from "@/api-client/sessions/schemas";
 import { requireResourceAccess } from "@/server/auth/permissions";
 import { prisma } from "@/server/db/client";
 import { HttpError } from "@/server/http-error";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { NextResponse } from "next/server";
+
+const log = getLogger("api-session-by-id");
 
 type Params = { sessionId: string };
 
@@ -73,11 +75,14 @@ export const DELETE = withAuth<Params>(async (req, user, { sessionId }) => {
 
   await prisma.session.delete({ where: { id: sessionId } });
 
-  log.info("session:delete:ok", {
-    sessionId,
-    orgId: session.project.organizationId,
-    byUserId: user.id,
-  });
+  log.info(
+    {
+      sessionId,
+      orgId: session.project.organizationId,
+      byUserId: user.id,
+    },
+    "session:delete:ok",
+  );
 
   return new Response(null, { status: 204 });
 });

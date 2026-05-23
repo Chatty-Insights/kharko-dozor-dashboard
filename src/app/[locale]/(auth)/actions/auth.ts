@@ -9,8 +9,10 @@ import { signInSchema, signUpSchema } from "@/app/[locale]/(auth)/validators";
 import { queryOtpRateLimit } from "@/server/auth/otp";
 import { prisma } from "@/server/db/client";
 import { env } from "@/server/env";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { cookies } from "next/headers";
+
+const log = getLogger("auth-actions");
 
 type ActionResult<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -27,7 +29,7 @@ type RateLimitResult = {
 export async function checkEmailExists(email: string): Promise<ActionResult<CheckEmailResult>> {
   const parsed = signInSchema.safeParse({ email });
   if (!parsed.success) {
-    log.info("auth:email_check:validation_failed", { email });
+    log.info({ email }, "auth:email_check:validation_failed");
     return { ok: false, error: "Invalid email" };
   }
 
@@ -43,7 +45,7 @@ export async function checkEmailExists(email: string): Promise<ActionResult<Chec
     hasPasskey: (user?.authenticators?.length ?? 0) > 0,
   };
 
-  log.info("auth:email_check:ok", { email: parsed.data.email, ...result });
+  log.info({ email: parsed.data.email, ...result }, "auth:email_check:ok");
 
   return { ok: true, data: result };
 }
@@ -53,9 +55,9 @@ export async function checkOtpRateLimit(email: string): Promise<ActionResult<Rat
 
   if (!status.allowed) {
     const reason = status.retryAfter ? "cooldown" : "daily_limit";
-    log.warn(`auth:otp:${reason}_blocked`, { email, retryAfter: status.retryAfter });
+    log.warn({ email, retryAfter: status.retryAfter }, `auth:otp:${reason}_blocked`);
   } else {
-    log.info("auth:otp:rate_limit_ok", { email });
+    log.info({ email }, "auth:otp:rate_limit_ok");
   }
 
   return { ok: true, data: status };
@@ -64,11 +66,10 @@ export async function checkOtpRateLimit(email: string): Promise<ActionResult<Rat
 export async function prepareSignUp(name: string, email: string): Promise<ActionResult> {
   const parsed = signUpSchema.safeParse({ name, email });
   if (!parsed.success) {
-    log.info("auth:signup:validation_failed", {
-      name,
-      email,
-      error: parsed.error.issues[0]?.message ?? "Invalid input",
-    });
+    log.info(
+      { name, email, error: parsed.error.issues[0]?.message ?? "Invalid input" },
+      "auth:signup:validation_failed",
+    );
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
@@ -78,12 +79,12 @@ export async function prepareSignUp(name: string, email: string): Promise<Action
   ]);
 
   if (existing) {
-    log.info("auth:signup:account_exists", { email: parsed.data.email });
+    log.info({ email: parsed.data.email }, "auth:signup:account_exists");
     return { ok: false, error: "ACCOUNT_EXISTS" };
   }
 
   if (!rateLimit.allowed) {
-    log.warn("auth:signup:rate_limited", { email: parsed.data.email });
+    log.warn({ email: parsed.data.email }, "auth:signup:rate_limited");
     return { ok: false, error: "RATE_LIMITED" };
   }
 
@@ -95,17 +96,14 @@ export async function prepareSignUp(name: string, email: string): Promise<Action
     sameSite: "lax",
   });
 
-  log.info("auth:signup:ready", { name: parsed.data.name, email: parsed.data.email });
+  log.info({ name: parsed.data.name, email: parsed.data.email }, "auth:signup:ready");
   return { ok: true, data: undefined };
 }
 
 export async function prepareSignIn(email: string): Promise<ActionResult<{ hasPasskey: boolean }>> {
   const parsed = signInSchema.safeParse({ email });
   if (!parsed.success) {
-    log.info("auth:signin:validation_failed", {
-      email,
-      error: parsed.error.issues[0]?.message ?? "Invalid input",
-    });
+    log.info({ email, error: parsed.error.issues[0]?.message ?? "Invalid input" }, "auth:signin:validation_failed");
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
@@ -117,15 +115,15 @@ export async function prepareSignIn(email: string): Promise<ActionResult<{ hasPa
   if (!emailResult.ok) return emailResult;
 
   if (!emailResult.data.exists) {
-    log.info("auth:signin:account_not_found", { email: parsed.data.email });
+    log.info({ email: parsed.data.email }, "auth:signin:account_not_found");
     return { ok: false, error: "ACCOUNT_NOT_FOUND" };
   }
 
   if (!rateLimit.allowed) {
-    log.warn("auth:signin:rate_limited", { email: parsed.data.email });
+    log.warn({ email: parsed.data.email }, "auth:signin:rate_limited");
     return { ok: false, error: "RATE_LIMITED" };
   }
 
-  log.info("auth:signin:ready", { email: parsed.data.email, hasPasskey: emailResult.data.hasPasskey });
+  log.info({ email: parsed.data.email, hasPasskey: emailResult.data.hasPasskey }, "auth:signin:ready");
   return { ok: true, data: { hasPasskey: emailResult.data.hasPasskey } };
 }

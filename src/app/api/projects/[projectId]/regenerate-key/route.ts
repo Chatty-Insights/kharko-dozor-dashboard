@@ -4,8 +4,10 @@ import { projectSchema } from "@/api-client/projects/schemas";
 import { generateApiKey } from "@/server/generate-api-key";
 import { requireProjectMember } from "@/server/auth/permissions";
 import { prisma } from "@/server/db/client";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { NextResponse } from "next/server";
+
+const log = getLogger("api-project-regenerate-key");
 
 type Params = { projectId: string };
 
@@ -31,11 +33,14 @@ export const POST = withAuth<Params>(async (req, user, { projectId }) => {
     },
   });
 
-  log.info("project:key:regenerate:ok", {
-    projectId,
-    orgId: updated.organizationId,
-    byUserId: user.id,
-  });
+  log.info(
+    {
+      projectId,
+      orgId: updated.organizationId,
+      byUserId: user.id,
+    },
+    "project:key:regenerate:ok",
+  );
 
   return NextResponse.json(
     projectSchema.parse({

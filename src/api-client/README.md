@@ -9,19 +9,19 @@ emits routes, `api-client/` calls them.
 
 ```
 src/api-client/
-  _lib/                          ← cross-cutting infrastructure (mirror of app/api/_lib/)
-    fetch.ts                     ← apiFetch (generic JSON fetch + ApiError boundary)
-    fetch-server-bridge.ts       ← server-only adapter; registers globalThis bridge
-    error.ts                     ← ApiError + ApiErrorKind + classifyHttpStatus + isApiError
-    routes.ts                    ← URL builder, single source of truth for /api/* paths
-    polling.ts                   ← pollingOptions(ms) helper for staleTime/refetchInterval
-    index.ts                     ← barrel
+  fetch.ts                       ← apiFetch (generic JSON fetch + ApiError boundary)
+  fetch-server-bridge.ts         ← server-only adapter; registers globalThis bridge
+  error.ts                       ← ApiError + ApiErrorKind + classifyHttpStatus + isApiError
+  routes.ts                      ← URL builder, single source of truth for /api/* paths
+  pagination.ts                  ← cursor pagination helpers (page schema, infinite-query factory)
+  polling.ts                     ← pollingOptions(ms) helper for staleTime/refetchInterval
+  sort.ts                        ← SORT_DIRECTIONS + SortDir
   <feature>/                     ← one folder per logical entity (uniform shape, see below)
-  index.ts                       ← thin top-level barrel; re-exports `_lib` only
 ```
 
-`_lib/` and feature folders are the only two kinds of top-level inhabitants.
-No flat sibling files at the root — anything cross-cutting lives in `_lib/`.
+Shared primitives sit flat at the root, alongside the per-feature folders.
+No `_lib/` subfolder, no top-level barrel — every consumer imports the exact
+module it needs (`@/api-client/fetch`, `@/api-client/<feature>`).
 
 ## Per-feature canonical shape
 
@@ -47,8 +47,8 @@ with a barrel — sibling files do not accumulate.
 
 ## What belongs here
 
-- **HTTP plumbing** — `_lib/fetch.ts` and `_lib/error.ts`.
-- **URL taxonomy** — `_lib/routes.ts`, the single source of truth for every `/api/*` path.
+- **HTTP plumbing** — `fetch.ts` and `error.ts`.
+- **URL taxonomy** — `routes.ts`, the single source of truth for every `/api/*` path.
 - **Per-feature data layer** — keys, schemas, queries, mutations, constants, domain.
 - **Domain logic that is isomorphic** (server ↔ client) lives under
   `<feature>/domain/` because the code is client-safe by construction. The
@@ -100,7 +100,7 @@ They are invariants — drift is the bug, not the feature.
 7. **Pagination shape.** Cursor-based: request takes `cursor?: string`,
    response is `{ data: T[], nextCursor: string | null }`. List queries set
    `placeholderData: keepPreviousData`. Shared types/helpers live in
-   `_lib/pagination.ts` (introduced when the second feature adopts cursor
+   `pagination.ts` (introduced when the second feature adopts cursor
    pagination — keep it inline until then).
 8. **Polling cadences in `constants.ts`.** Magic numbers for poll intervals,
    stale times, limits live in `<feature>/constants.ts` as named exports
@@ -109,10 +109,10 @@ They are invariants — drift is the bug, not the feature.
 9. **Barrel re-exports everything.** Every `<feature>/index.ts` re-exports
    `keys`, `queries`, `mutations`, `schemas`, plus `constants` and `domain`
    when present. No silently-missing modules.
-10. **Top-level `api-client/index.ts` stays thin.** It re-exports only `_lib/`
-    primitives. Per-feature consumers import from
-    `@/api-client/<feature>` directly — tree-shaking sees one entry per
-    feature instead of a fat top-level barrel.
+10. **No top-level barrel.** Per-feature consumers import from
+    `@/api-client/<feature>` directly; shared primitives import from
+    `@/api-client/<module>` directly — tree-shaking sees one entry per
+    import instead of a fat top-level barrel.
 
 ## Suspense vs classic — when to use which
 
@@ -157,7 +157,7 @@ the page.
    `tracked-users/` is the full-size example with `domain/`.
 3. Add `<feature>/constants.ts` if you need polling cadences or magic
    numbers; otherwise skip the file.
-4. Route the new paths via `_lib/routes.ts` — no raw string URLs elsewhere
+4. Route the new paths via `routes.ts` — no raw string URLs elsewhere
    in the codebase.
 5. Export a feature barrel from `<feature>/index.ts` re-exporting every
    sibling module.

@@ -3,8 +3,10 @@ import { withAuth } from "@/app/api/_lib/with-auth";
 import { userInviteDeclineResponseSchema } from "@/api-client/user-invites/schemas";
 import { prisma } from "@/server/db/client";
 import { HttpError } from "@/server/http-error";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { NextResponse } from "next/server";
+
+const log = getLogger("api-user-invite-decline");
 
 type Params = { id: string };
 
@@ -25,7 +27,7 @@ export const POST = withAuth<Params>(async (_req, user, { id }) => {
 
   await prisma.invite.delete({ where: { id: invite.id } });
 
-  log.info("user:invite:decline:ok", { inviteId: invite.id, userId: user.id });
+  log.info({ inviteId: invite.id, userId: user.id }, "user:invite:decline:ok");
 
   return NextResponse.json(userInviteDeclineResponseSchema.parse({ ok: true }));
 });

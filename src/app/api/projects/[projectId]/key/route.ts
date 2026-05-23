@@ -3,8 +3,10 @@ import type { ApiKeyPlaintext } from "@/lib/mask-api-key";
 import { projectKeySchema } from "@/api-client/projects/schemas";
 import { requireProjectMember } from "@/server/auth/permissions";
 import { prisma } from "@/server/db/client";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { NextResponse } from "next/server";
+
+const log = getLogger("api-project-key");
 
 type Params = { projectId: string };
 
@@ -22,7 +24,7 @@ export const GET = withAuth<Params>(async (req, user, { projectId }) => {
   });
 
   // Audit — actor + projectId only. The `key` field is also in pino's prod redact list as defence-in-depth.
-  log.info("project:key:fetch:ok", { projectId, byUserId: user.id });
+  log.info({ projectId, byUserId: user.id }, "project:key:fetch:ok");
 
   return NextResponse.json(projectKeySchema.parse({ key: key as ApiKeyPlaintext }), {
     headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },

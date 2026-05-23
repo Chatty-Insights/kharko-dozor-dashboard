@@ -1,6 +1,6 @@
-import type { SortDir } from "@/api-client/_lib/sort";
+import type { SortDir } from "@/api-client/sort";
 
-export { SORT_DIRECTIONS } from "@/api-client/_lib/sort";
+export { SORT_DIRECTIONS } from "@/api-client/sort";
 
 export const SESSION_LIST_SORT_OPTIONS = ["date", "duration"] as const;
 export type SessionListSortBy = (typeof SESSION_LIST_SORT_OPTIONS)[number];

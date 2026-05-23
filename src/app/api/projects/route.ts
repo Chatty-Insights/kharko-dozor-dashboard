@@ -5,8 +5,10 @@ import { createProjectSchema } from "@/api-client/projects/schemas";
 import { generateApiKey } from "@/server/generate-api-key";
 import { requireMember } from "@/server/auth/permissions";
 import { prisma } from "@/server/db/client";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { NextResponse } from "next/server";
+
+const log = getLogger("api-projects");
 
 /** Masked-only — plaintext leaves the server exclusively via `GET /api/projects/[id]/key`. */
 export const GET = withAuth(async (req, user) => {
@@ -81,12 +83,15 @@ export const POST = withAuth(async (req, user) => {
     },
   });
 
-  log.info("project:create:ok", {
-    projectId: project.id,
-    name: project.name,
-    orgId: project.organizationId,
-    byUserId: user.id,
-  });
+  log.info(
+    {
+      projectId: project.id,
+      name: project.name,
+      orgId: project.organizationId,
+      byUserId: user.id,
+    },
+    "project:create:ok",
+  );
 
   return NextResponse.json(
     projectSchema.parse({

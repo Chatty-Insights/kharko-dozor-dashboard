@@ -5,7 +5,9 @@ import { INVITE_EXPIRY_DAYS } from "@/api-client/organizations/constants";
 import { ONE_DAY_MS } from "@/lib/time";
 import { prisma } from "@/server/db/client";
 import { HttpError } from "@/server/http-error";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
+
+const log = getLogger("org-invite-refresh-or-create");
 
 type Params = {
   orgId: string;
@@ -39,13 +41,16 @@ export async function refreshOrCreatePendingInvite({ orgId, email, role, inviter
       where: { id: existingPending.id },
       data: { role, expiresAt, invitedById: inviterId },
     });
-    log.debug("org:invite:refresh:ok", {
-      orgId,
-      inviteId: refreshed.id,
-      email,
-      fromRole: existingPending.role,
-      toRole: role,
-    });
+    log.debug(
+      {
+        orgId,
+        inviteId: refreshed.id,
+        email,
+        fromRole: existingPending.role,
+        toRole: role,
+      },
+      "org:invite:refresh:ok",
+    );
     return refreshed;
   }
 
@@ -59,6 +64,6 @@ export async function refreshOrCreatePendingInvite({ orgId, email, role, inviter
       invitedById: inviterId,
     },
   });
-  log.debug("org:invite:create:ok", { orgId, inviteId: created.id, email, role });
+  log.debug({ orgId, inviteId: created.id, email, role }, "org:invite:create:ok");
   return created;
 }

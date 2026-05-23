@@ -2,7 +2,9 @@ import { withAuth } from "@/app/api/_lib/with-auth";
 import { renamePasskeySchema } from "@/api-client/user/schemas";
 import { prisma } from "@/server/db/client";
 import { HttpError } from "@/server/http-error";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
+
+const log = getLogger("api-user-passkey");
 
 type Params = { credentialId: string };
 
@@ -19,7 +21,7 @@ export const PATCH = withAuth<Params>(async (req, user, { credentialId }) => {
     throw new HttpError(404, "Passkey not found");
   }
 
-  log.info("user:passkey:rename:ok", { userId: user.id, credentialId, name: body.name });
+  log.info({ userId: user.id, credentialId, name: body.name }, "user:passkey:rename:ok");
 
   return new Response(null, { status: 204 });
 });
@@ -34,7 +36,7 @@ export const DELETE = withAuth<Params>(async (req, user, { credentialId }) => {
     throw new HttpError(404, "Passkey not found");
   }
 
-  log.info("user:passkey:delete:ok", { userId: user.id, credentialId });
+  log.info({ userId: user.id, credentialId }, "user:passkey:delete:ok");
 
   return new Response(null, { status: 204 });
 });

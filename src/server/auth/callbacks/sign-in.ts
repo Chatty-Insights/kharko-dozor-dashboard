@@ -1,6 +1,8 @@
 import "server-only";
 import { prisma } from "@/server/db/client";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
+
+const log = getLogger("auth-signin-callback");
 import type { NextAuthConfig } from "next-auth";
 
 type SignInCallback = NonNullable<NonNullable<NextAuthConfig["callbacks"]>["signIn"]>;
@@ -20,12 +22,15 @@ export const signInCallback: SignInCallback = async ({ user, account }) => {
     }
   }
 
-  log.info("auth:signin:callback:ok", {
-    userId: user?.id ?? null,
-    email: user?.email ?? null,
-    provider: account?.provider ?? null,
-    type: account?.type ?? null,
-  });
+  log.info(
+    {
+      userId: user?.id ?? null,
+      email: user?.email ?? null,
+      provider: account?.provider ?? null,
+      accountType: account?.type ?? null,
+    },
+    "auth:signin:callback:ok",
+  );
 
   return true;
 };

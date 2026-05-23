@@ -4,8 +4,10 @@ import { userInviteAcceptResponseSchema } from "@/api-client/user-invites/schema
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/server/db/client";
 import { HttpError } from "@/server/http-error";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { NextResponse } from "next/server";
+
+const log = getLogger("api-user-invite-accept");
 
 type Params = { id: string };
 
@@ -48,23 +50,29 @@ export const POST = withAuth<Params>(async (_req, user, { id }) => {
     );
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && (err.code === "P2002" || err.code === "P2034")) {
-      log.debug("user:invite:accept:race", {
-        inviteId: invite.id,
-        orgId: invite.organizationId,
-        userId: user.id,
-        code: err.code,
-      });
+      log.debug(
+        {
+          inviteId: invite.id,
+          orgId: invite.organizationId,
+          userId: user.id,
+          code: err.code,
+        },
+        "user:invite:accept:race",
+      );
       throw new HttpError(409, "This invitation has already been accepted.");
     }
     throw err;
   }
 
-  log.info("user:invite:accept:ok", {
-    inviteId: invite.id,
-    orgId: invite.organizationId,
-    role: invite.role,
-    userId: user.id,
-  });
+  log.info(
+    {
+      inviteId: invite.id,
+      orgId: invite.organizationId,
+      role: invite.role,
+      userId: user.id,
+    },
+    "user:invite:accept:ok",
+  );
 
   return NextResponse.json(
     userInviteAcceptResponseSchema.parse({

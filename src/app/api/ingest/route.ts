@@ -2,12 +2,14 @@ import { corsPreflightResponse } from "@/app/api/_lib/cors";
 import { withPublicKey } from "@/app/api/_lib/with-public-key";
 import { prisma } from "@/server/db/client";
 import { isHttpError } from "@/server/http-error";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 
 import { insertEventBatch } from "./_helpers/event-batch";
 import { extractAndInsertMarkers, insertInitialUrlMarker } from "./_helpers/markers";
 import { ingestSchema, parseIngestBody } from "./_helpers/parse-body";
 import { upsertSessionAndLinkTrackedUser } from "./_helpers/session-upsert";
+
+const log = getLogger("api-ingest");
 
 export const OPTIONS = corsPreflightResponse;
 
@@ -50,13 +52,16 @@ export const POST = withPublicKey(async ({ project, req }) => {
     { timeout: INGEST_TX_TIMEOUT_MS },
   );
 
-  log.info("ingest:batch:received", {
-    projectId: project.id,
-    sessionId: session.id,
-    externalId,
-    eventCount: events.length,
-    hasIdentity: Boolean(metadata?.userIdentity),
-  });
+  log.info(
+    {
+      projectId: project.id,
+      sessionId: session.id,
+      externalId,
+      eventCount: events.length,
+      hasIdentity: Boolean(metadata?.userIdentity),
+    },
+    "ingest:batch:received",
+  );
 
   // Fire-and-forget — a slow/failed update must never break ingestion.
   prisma.project.update({ where: { id: project.id }, data: { lastUsedAt: new Date() } }).catch(() => {});

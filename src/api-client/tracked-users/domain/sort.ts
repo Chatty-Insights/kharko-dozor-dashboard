@@ -1,6 +1,6 @@
-import type { SortDir } from "@/api-client/_lib/sort";
+import type { SortDir } from "@/api-client/sort";
 
-export { SORT_DIRECTIONS } from "@/api-client/_lib/sort";
+export { SORT_DIRECTIONS } from "@/api-client/sort";
 
 export const USER_LIST_SORT_OPTIONS = ["last-seen", "sessions", "active-time", "newest"] as const;
 export type UserListSortBy = (typeof USER_LIST_SORT_OPTIONS)[number];

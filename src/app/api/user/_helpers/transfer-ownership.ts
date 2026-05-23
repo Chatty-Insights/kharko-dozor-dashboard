@@ -1,7 +1,9 @@
 import "server-only";
 
 import type { Prisma } from "@/generated/prisma/client";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
+
+const log = getLogger("user-transfer-ownership");
 
 type TransactionClient = Prisma.TransactionClient;
 
@@ -41,7 +43,7 @@ export async function transferOrganizationOwnership(
     if (!hasOtherOwner) {
       const successor = await findSuccessor(tx, orgId, departingUserId);
       if (!successor) {
-        log.warn("org:ownership:transfer:no_successor", { orgId, departingUserId });
+        log.warn({ orgId, departingUserId }, "org:ownership:transfer:no_successor");
         return;
       }
 
@@ -50,12 +52,15 @@ export async function transferOrganizationOwnership(
         data: { role: "OWNER" },
       });
 
-      log.info("org:ownership:transfer:ok", {
-        orgId,
-        fromUserId: departingUserId,
-        toUserId: successor.userId,
-        successorPriorRole: successor.role,
-      });
+      log.info(
+        {
+          orgId,
+          fromUserId: departingUserId,
+          toUserId: successor.userId,
+          successorPriorRole: successor.role,
+        },
+        "org:ownership:transfer:ok",
+      );
     }
   }
 
@@ -71,11 +76,14 @@ export async function transferOrganizationOwnership(
         data: { createdById: owner.userId },
       });
 
-      log.info("org:created_by:reassign:ok", {
-        orgId,
-        fromUserId: departingUserId,
-        toUserId: owner.userId,
-      });
+      log.info(
+        {
+          orgId,
+          fromUserId: departingUserId,
+          toUserId: owner.userId,
+        },
+        "org:created_by:reassign:ok",
+      );
     }
   }
 }

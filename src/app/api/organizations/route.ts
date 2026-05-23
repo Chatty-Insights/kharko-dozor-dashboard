@@ -3,8 +3,10 @@ import { orgAvatarUrl } from "@/lib/avatar";
 import { organizationCreatedSchema, organizationListSchema } from "@/api-client/organizations/schemas";
 import { createOrgSchema } from "@/api-client/organizations/schemas";
 import { prisma } from "@/server/db/client";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { NextResponse } from "next/server";
+
+const log = getLogger("api-organizations");
 
 /** Ordered by `createdAt ASC` so Personal Space (oldest) surfaces first in the switcher. */
 export const GET = withAuth(async (req, user) => {
@@ -62,12 +64,15 @@ export const POST = withAuth(async (req, user) => {
     return created;
   });
 
-  log.info("org:create:ok", {
-    orgId: org.id,
-    name: org.name,
-    type: org.type,
-    byUserId: user.id,
-  });
+  log.info(
+    {
+      orgId: org.id,
+      name: org.name,
+      type: org.type,
+      byUserId: user.id,
+    },
+    "org:create:ok",
+  );
 
   return NextResponse.json(
     organizationCreatedSchema.parse({ id: org.id, name: org.name, image: org.image, type: org.type }),

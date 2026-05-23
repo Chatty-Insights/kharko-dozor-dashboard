@@ -20,7 +20,7 @@ import {
 } from "@/api-client/sessions/domain";
 import { SESSIONS_LIST_POLL_MS } from "@/api-client/sessions/constants";
 import { useSessionsSummarySuspenseQuery, useSessionsSuspenseInfiniteQuery } from "@/api-client/sessions/queries";
-import { flattenCursorPages } from "@/api-client/_lib/pagination";
+import { flattenCursorPages } from "@/api-client/pagination";
 import { useCanManageActiveOrg } from "@/lib/hooks/use-can-manage-active-org";
 import { EmptyState } from "./empty-state";
 import { FilterBar } from "./filter-bar";

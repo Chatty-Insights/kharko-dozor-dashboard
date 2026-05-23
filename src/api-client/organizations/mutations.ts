@@ -1,8 +1,8 @@
-import { apiFetch } from "@/api-client/_lib/fetch";
+import { apiFetch } from "@/api-client/fetch";
 import { organizationKeys } from "@/api-client/organizations/keys";
 import { organizationQueries } from "@/api-client/organizations/queries";
 import { projectKeys } from "@/api-client/projects/keys";
-import { routes } from "@/api-client/_lib/routes";
+import { routes } from "@/api-client/routes";
 import { sessionKeys } from "@/api-client/sessions/keys";
 import { trackedUserKeys } from "@/api-client/tracked-users/keys";
 import type {

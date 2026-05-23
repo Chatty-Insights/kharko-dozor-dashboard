@@ -4,8 +4,10 @@ import { OTP_LENGTH } from "@/lib/auth/otp.constants";
 import { getEnabledProviders } from "@/server/auth/enabled-providers";
 import { bumpOtpRateLimit, otpEmailHtml, queryOtpRateLimit } from "@/server/auth/otp";
 import { env } from "@/server/env";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { sendMail } from "@/server/mailer";
+
+const log = getLogger("auth-providers");
 import type { Provider } from "next-auth/providers";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
@@ -52,12 +54,12 @@ export function createAuthProviders(): Provider[] {
           const status = await queryOtpRateLimit(email);
           if (!status.allowed) {
             const reason = status.retryAfter ? "cooldown" : "daily_limit";
-            log.warn(`auth:otp:${reason}_blocked`, { email });
+            log.warn({ email }, `auth:otp:${reason}_blocked`);
             throw new Error(status.retryAfter ? "OTP cooldown active" : "Daily OTP limit reached");
           }
 
           const { count } = await bumpOtpRateLimit(email);
-          log.info("auth:otp:sending", { email, newCount: count });
+          log.info({ email, newCount: count }, "auth:otp:sending");
 
           // First-time sign-ups have no User row yet — `resolveLocaleForUser`
           // falls back to `DEFAULT_LOCALE` (also for stored locales no longer in `LOCALES`).

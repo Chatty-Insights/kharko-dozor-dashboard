@@ -3,7 +3,9 @@ import { updateDisplayNameSchema } from "@/api-client/tracked-users/schemas";
 import { requireResourceAccess } from "@/server/auth/permissions";
 import { prisma } from "@/server/db/client";
 import { HttpError } from "@/server/http-error";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
+
+const log = getLogger("api-tracked-user-display-name");
 
 type Params = { userId: string };
 
@@ -34,13 +36,16 @@ export const PATCH = withAuth<Params>(async (req, user, { userId }) => {
     data,
   });
 
-  log.info("tracked_user:display_name:update:ok", {
-    trackedUserId: userId,
-    orgId: trackedUser.project.organizationId,
-    customName: body.customName ?? null,
-    traitKey: body.traitKey ?? null,
-    byUserId: user.id,
-  });
+  log.info(
+    {
+      trackedUserId: userId,
+      orgId: trackedUser.project.organizationId,
+      customName: body.customName ?? null,
+      traitKey: body.traitKey ?? null,
+      byUserId: user.id,
+    },
+    "tracked_user:display_name:update:ok",
+  );
 
   return new Response(null, { status: 204 });
 });

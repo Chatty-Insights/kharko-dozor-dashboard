@@ -2,7 +2,9 @@ import "server-only";
 
 import { prisma } from "@/server/db/client";
 import { HttpError } from "@/server/http-error";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
+
+const log = getLogger("invite-lifecycle");
 
 /**
  * Lazy expiration on read — list endpoints fire this so stale PENDING rows
@@ -16,7 +18,7 @@ export function expireStaleInvites(expiredIds: readonly string[]): void {
       where: { id: { in: [...expiredIds] } },
       data: { status: "EXPIRED" },
     })
-    .catch((err: unknown) => log.error("org:invite:expire_sweep:failed", { err }));
+    .catch((err: unknown) => log.error({ err }, "org:invite:expire_sweep:failed"));
 }
 
 type InviteForUserGuard = {

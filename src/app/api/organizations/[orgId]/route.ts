@@ -5,7 +5,9 @@ import { updateOrgSchema } from "@/api-client/organizations/schemas";
 import { requireMember } from "@/server/auth/permissions";
 import { prisma } from "@/server/db/client";
 import { HttpError } from "@/server/http-error";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
+
+const log = getLogger("api-organizations-by-id");
 
 type Params = { orgId: string };
 
@@ -25,11 +27,14 @@ export const PATCH = withAuth<Params>(async (req, user, { orgId }) => {
 
   await prisma.organization.update({ where: { id: orgId }, data });
 
-  log.info("org:update:ok", {
-    orgId,
-    fields: Object.keys(data).join(","),
-    byUserId: user.id,
-  });
+  log.info(
+    {
+      orgId,
+      fields: Object.keys(data).join(","),
+      byUserId: user.id,
+    },
+    "org:update:ok",
+  );
 
   return new Response(null, { status: 204 });
 });
@@ -66,12 +71,15 @@ export const DELETE = withAuth<Params>(async (req, user, { orgId }) => {
     return { affectedUsers: affectedUsers.length, invitesDeleted: invitesDeleted.count };
   });
 
-  log.info("org:delete:ok", {
-    orgId,
-    byUserId: user.id,
-    affectedUsers: summary.affectedUsers,
-    invitesDeleted: summary.invitesDeleted,
-  });
+  log.info(
+    {
+      orgId,
+      byUserId: user.id,
+      affectedUsers: summary.affectedUsers,
+      invitesDeleted: summary.invitesDeleted,
+    },
+    "org:delete:ok",
+  );
 
   return new Response(null, { status: 204 });
 });

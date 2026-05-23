@@ -1,5 +1,5 @@
-import { apiFetch } from "@/api-client/_lib/fetch";
-import { routes } from "@/api-client/_lib/routes";
+import { apiFetch } from "@/api-client/fetch";
+import { routes } from "@/api-client/routes";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { userKeys } from "./keys";
 import type { UserProfile } from "./schemas";

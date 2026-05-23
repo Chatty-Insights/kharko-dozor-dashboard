@@ -2,7 +2,9 @@ import { withAuth } from "@/app/api/_lib/with-auth";
 import { updateProjectSchema } from "@/api-client/projects/schemas";
 import { requireProjectMember } from "@/server/auth/permissions";
 import { prisma } from "@/server/db/client";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
+
+const log = getLogger("api-project-by-id");
 
 type Params = { projectId: string };
 
@@ -17,7 +19,7 @@ export const PATCH = withAuth<Params>(async (req, user, { projectId }) => {
     data: { name: body.name },
   });
 
-  log.info("project:rename:ok", { projectId, name: body.name, byUserId: user.id });
+  log.info({ projectId, name: body.name, byUserId: user.id }, "project:rename:ok");
 
   return new Response(null, { status: 204 });
 });
@@ -32,7 +34,7 @@ export const DELETE = withAuth<Params>(async (req, user, { projectId }) => {
 
   await prisma.project.delete({ where: { id: projectId } });
 
-  log.info("project:delete:ok", { projectId, byUserId: user.id });
+  log.info({ projectId, byUserId: user.id }, "project:delete:ok");
 
   return new Response(null, { status: 204 });
 });

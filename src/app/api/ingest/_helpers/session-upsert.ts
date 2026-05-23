@@ -1,8 +1,10 @@
 import "server-only";
 
 import type { Prisma, PrismaClient } from "@/generated/prisma/client";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import type { IngestEvent, IngestMetadata } from "./parse-body";
+
+const log = getLogger("ingest-session-upsert");
 
 type DbClient = PrismaClient | Prisma.TransactionClient;
 
@@ -94,12 +96,15 @@ export async function upsertSessionAndLinkTrackedUser(
     });
     trackedUserId = trackedUser.id;
     await tx.session.update({ where: { id: session.id }, data: { trackedUserId: trackedUser.id } });
-    log.debug("ingest:tracked_user:linked", {
-      projectId,
-      sessionId: session.id,
-      trackedUserId: trackedUser.id,
-      externalUserId: userId,
-    });
+    log.debug(
+      {
+        projectId,
+        sessionId: session.id,
+        trackedUserId: trackedUser.id,
+        externalUserId: userId,
+      },
+      "ingest:tracked_user:linked",
+    );
   }
 
   return {

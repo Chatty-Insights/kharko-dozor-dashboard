@@ -1,6 +1,6 @@
-import { apiFetch } from "@/api-client/_lib/fetch";
+import { apiFetch } from "@/api-client/fetch";
 import { organizationQueries } from "@/api-client/organizations/queries";
-import { routes } from "@/api-client/_lib/routes";
+import { routes } from "@/api-client/routes";
 import { userInviteQueries } from "@/api-client/user-invites/queries";
 import type { InviteActionVariables, UserInvite } from "@/api-client/user-invites/schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";

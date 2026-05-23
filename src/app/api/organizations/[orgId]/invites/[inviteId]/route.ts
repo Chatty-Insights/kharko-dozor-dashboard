@@ -5,7 +5,9 @@ import { updateInviteSchema } from "@/api-client/organizations/schemas";
 import { ONE_DAY_MS } from "@/lib/time";
 import { requireMember } from "@/server/auth/permissions";
 import { prisma } from "@/server/db/client";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
+
+const log = getLogger("api-org-invite-by-id");
 
 type Params = { orgId: string; inviteId: string };
 
@@ -25,7 +27,7 @@ export const PATCH = withAuth<Params>(async (req, user, { orgId, inviteId }) => 
       where: { id: inviteId },
       data: { role: body.role },
     });
-    log.info("org:invite:role_change:ok", { orgId, inviteId, toRole: body.role, byUserId: user.id });
+    log.info({ orgId, inviteId, toRole: body.role, byUserId: user.id }, "org:invite:role_change:ok");
   } else {
     await prisma.invite.update({
       where: { id: inviteId },
@@ -34,7 +36,7 @@ export const PATCH = withAuth<Params>(async (req, user, { orgId, inviteId }) => 
         invitedById: user.id,
       },
     });
-    log.info("org:invite:extend:ok", { orgId, inviteId, expiryDays: INVITE_EXPIRY_DAYS, byUserId: user.id });
+    log.info({ orgId, inviteId, expiryDays: INVITE_EXPIRY_DAYS, byUserId: user.id }, "org:invite:extend:ok");
   }
 
   return new Response(null, { status: 204 });
@@ -51,7 +53,7 @@ export const DELETE = withAuth<Params>(async (_req, user, { orgId, inviteId }) =
 
   await prisma.invite.delete({ where: { id: inviteId } });
 
-  log.info("org:invite:revoke:ok", { orgId, inviteId, byUserId: user.id });
+  log.info({ orgId, inviteId, byUserId: user.id }, "org:invite:revoke:ok");
 
   return new Response(null, { status: 204 });
 });

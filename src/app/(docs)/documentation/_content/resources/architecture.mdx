@@ -177,15 +177,19 @@ refetchInterval: ms }`.
 ### pino logger
 
 ```ts
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 
-log.info("org:invite:create_or_refresh:ok", { byUserId, orgId, inviteId });
-log.warn("auth:otp:cooldown_blocked", { email, retryAfter });
+const log = getLogger("org-invites");
+
+log.info({ byUserId, orgId, inviteId }, "org:invite:create_or_refresh:ok");
+log.warn({ email, retryAfter }, "auth:otp:cooldown_blocked");
 ```
 
-Tag format: `domain:entity:action[:state]`, lowercase + underscores
-inside segments, `:` between. Tag is **first** so the reader scans
-events at a glance; structured data follows.
+Pino's native `(obj, msg)` arg order: structured data first, message
+(scannable tag) second. Tag format stays
+`domain:entity:action[:state]`, lowercase + underscores inside
+segments, `:` between. `getLogger(type)` returns a `child` logger that
+tags every line with `type` for grouping/filtering.
 
 Levels:
 

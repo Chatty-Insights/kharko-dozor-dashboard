@@ -9,8 +9,10 @@ import { requireMember } from "@/server/auth/permissions";
 import { prisma } from "@/server/db/client";
 import { HttpError } from "@/server/http-error";
 import { assertInviteRateLimit, bumpInviteRateLimit } from "@/server/invite-rate-limit";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { sendMail } from "@/server/mailer";
+
+const log = getLogger("api-org-invites");
 import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
@@ -101,14 +103,17 @@ export const POST = withAuth<Params>(async (req, user, { orgId }) => {
     inviterId: user.id,
   });
 
-  log.info("org:invite:create_or_refresh:ok", {
-    orgId,
-    inviteId: invite.id,
-    email: invite.email,
-    role: invite.role,
-    expiresAt: invite.expiresAt.toISOString(),
-    byUserId: user.id,
-  });
+  log.info(
+    {
+      orgId,
+      inviteId: invite.id,
+      email: invite.email,
+      role: invite.role,
+      expiresAt: invite.expiresAt.toISOString(),
+      byUserId: user.id,
+    },
+    "org:invite:create_or_refresh:ok",
+  );
 
   // Bumped AFTER the row landed so a DB failure above doesn't burn a quota slot on a no-op.
   await bumpInviteRateLimit(user.id);
@@ -130,12 +135,12 @@ export const POST = withAuth<Params>(async (req, user, { orgId }) => {
       t,
     }),
   })
-    .then(() => log.info("org:invite:email:sent", { email: body.email }))
+    .then(() => log.info({ email: body.email }, "org:invite:email:sent"))
     .catch((err: unknown) => {
       // Route already returned 200, catch swallows so it never bubbles to
       // onRequestError — explicit Sentry call so an SMTP outage doesn't pile
       // up un-delivered invites silently.
-      log.error("org:invite:email:delivery_failed", { err, email: body.email });
+      log.error({ err, email: body.email }, "org:invite:email:delivery_failed");
       Sentry.captureException(err, { tags: { area: "org:invite:email" }, extra: { email: body.email } });
     });
 

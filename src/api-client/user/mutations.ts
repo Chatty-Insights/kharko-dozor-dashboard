@@ -1,5 +1,5 @@
-import { apiFetch } from "@/api-client/_lib/fetch";
-import { routes } from "@/api-client/_lib/routes";
+import { apiFetch } from "@/api-client/fetch";
+import { routes } from "@/api-client/routes";
 import { userQueries } from "@/api-client/user/queries";
 import type {
   DeleteAccountInput,

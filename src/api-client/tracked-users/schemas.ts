@@ -8,7 +8,7 @@
 
 import { z } from "zod";
 
-import { cursorPageSchema } from "@/api-client/_lib/pagination";
+import { cursorPageSchema } from "@/api-client/pagination";
 import { ACTIVITY_RANGES } from "./domain/ranges";
 import { USER_LIST_SORT_OPTIONS, SORT_DIRECTIONS, type UserListSortBy, type UserListSortDir } from "./domain/sort";
 import { USER_ACTIVITY_STATUSES, type UserActivityStatus } from "./domain/status";

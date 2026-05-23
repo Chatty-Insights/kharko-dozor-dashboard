@@ -1,6 +1,6 @@
-import { apiFetch } from "@/api-client/_lib/fetch";
-import { pollingOptions } from "@/api-client/_lib/polling";
-import { routes } from "@/api-client/_lib/routes";
+import { apiFetch } from "@/api-client/fetch";
+import { pollingOptions } from "@/api-client/polling";
+import { routes } from "@/api-client/routes";
 import {
   queryOptions,
   useInfiniteQuery,
@@ -8,7 +8,7 @@ import {
   useSuspenseInfiniteQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { cursorInfiniteQueryOptions, cursorPlaceholderData } from "@/api-client/_lib/pagination";
+import { cursorInfiniteQueryOptions, cursorPlaceholderData } from "@/api-client/pagination";
 import { trackedUserKeys } from "./keys";
 import type {
   PaginatedTrackedUsers,

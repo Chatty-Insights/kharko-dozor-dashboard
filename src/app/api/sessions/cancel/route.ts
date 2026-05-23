@@ -1,8 +1,10 @@
 import { corsPreflightResponse } from "@/app/api/_lib/cors";
 import { withPublicKey } from "@/app/api/_lib/with-public-key";
 import { prisma } from "@/server/db/client";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import { z } from "zod";
+
+const log = getLogger("api-session-cancel");
 
 const cancelSchema = z.object({
   sessionId: z.uuid(),
@@ -26,13 +28,13 @@ export const POST = withPublicKey(async ({ project, req }) => {
 
   if (!session) {
     // Cancel arrived before the first ingest batch — quiet no-op.
-    log.debug("session:cancel:noop_race", { projectId: project.id, externalId });
+    log.debug({ projectId: project.id, externalId }, "session:cancel:noop_race");
     return new Response(null, { status: 204 });
   }
 
   await prisma.session.delete({ where: { id: session.id } });
 
-  log.info("session:cancel:ok", { sessionId: session.id, projectId: project.id, externalId });
+  log.info({ sessionId: session.id, projectId: project.id, externalId }, "session:cancel:ok");
 
   return new Response(null, { status: 204 });
 });

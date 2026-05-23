@@ -7,7 +7,7 @@
 
 import { z } from "zod";
 
-import { cursorPageSchema } from "@/api-client/_lib/pagination";
+import { cursorPageSchema } from "@/api-client/pagination";
 import { SESSION_DATE_RANGES, type SessionDateRange } from "./domain/ranges";
 import {
   SESSION_LIST_SORT_OPTIONS,

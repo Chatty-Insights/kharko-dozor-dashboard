@@ -4,8 +4,10 @@ import { createAuthAdapter } from "@/server/auth/adapter";
 import { authCallbacks } from "@/server/auth/callbacks";
 import { authEvents } from "@/server/auth/events";
 import { createAuthProviders } from "@/server/auth/providers";
-import { log } from "@/server/logger";
+import { getLogger } from "@/server/logger";
 import NextAuth from "next-auth";
+
+const log = getLogger("auth-nextauth");
 
 /**
  * Composition root for Auth.js — wires adapter / providers / callbacks / events
@@ -26,7 +28,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   logger: {
     warn(code) {
       if (code !== "experimental-webauthn") {
-        log.warn("auth:nextauth:warn", { code });
+        log.warn({ code }, "auth:nextauth:warn");
       }
     },
   },

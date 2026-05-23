@@ -1,6 +1,6 @@
 import type { useTranslations } from "next-intl";
 
-import { isApiError } from "@/api-client/_lib/error";
+import { isApiError } from "@/api-client/error";
 import { assertNever } from "@/lib/assert-never";
 
 /**
