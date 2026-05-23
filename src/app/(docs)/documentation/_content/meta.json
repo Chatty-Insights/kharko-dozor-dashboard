@@ -25,6 +25,9 @@
     "sdk/wire-format",
     "sdk/edge-cases",
 
+    "---API Reference---",
+    "...api",
+
     "---Resources---",
     "resources/architecture",
     "resources/data-model",

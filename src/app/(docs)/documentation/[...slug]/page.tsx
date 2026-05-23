@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page";
 import defaultMdxComponents from "fumadocs-ui/mdx";
+import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page";
 
 import { source } from "@/lib/source";
 import { APIPage } from "./openapi";
@@ -28,6 +28,21 @@ export default async function DocumentationPage({ params }: DocumentationPagePro
   const { slug } = await params;
   const page = source.getPage(slug);
   if (!page) notFound();
+
+  // Virtual OpenAPI pages carry `getAPIPageProps()` instead of an MDX body.
+  // The Record-form loader sets `page.type` to the source key (`"docs"` /
+  // `"openapi"`), narrowing both branches automatically.
+  if (page.type === "openapi") {
+    return (
+      <DocsPage toc={page.data.toc} full>
+        <DocsTitle>{page.data.title}</DocsTitle>
+        <DocsDescription>{page.data.description}</DocsDescription>
+        <DocsBody>
+          <APIPage {...page.data.getAPIPageProps()} />
+        </DocsBody>
+      </DocsPage>
+    );
+  }
 
   const MDX = page.data.body;
 

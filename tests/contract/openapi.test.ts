@@ -1620,6 +1620,36 @@ const manifest: OperationManifest[] = [
   },
 ];
 
+/**
+ * Top-level `tags: TagObject[]` is required by `fumadocs-openapi`'s tag-based
+ * grouping — it calls `dereferenced.tags?.find(...)` and crashes on undefined.
+ * Per-operation `tags` alone isn't enough. Order mirrors the manifest's first
+ * appearance so the Fumadocs sidebar matches the manual section ordering.
+ */
+function buildTags(): { name: string; description: string }[] {
+  const ordered: string[] = [];
+  const seen = new Set<string>();
+  for (const op of manifest) {
+    for (const tag of op.tags ?? []) {
+      if (seen.has(tag)) continue;
+      seen.add(tag);
+      ordered.push(tag);
+    }
+  }
+  const descriptions: Record<string, string> = {
+    Ingest: "Public SDK ingestion endpoints (public-key auth).",
+    Projects: "Project CRUD + key lifecycle.",
+    Organizations: "Organisation CRUD + active-org switching.",
+    Members: "Org membership listing, role changes, self-leave + ownership transfer.",
+    Invites: "Org-side invite lifecycle (OWNER-governed).",
+    Sessions: "Session list, detail, marker stream, summary KPIs, cancellation.",
+    "Tracked Users": "Tracked-user list, detail, activity, timeline, status.",
+    User: "Signed-in user profile, OAuth/passkey links, invites, locale.",
+    Cron: "Vercel Cron-invoked maintenance jobs.",
+  };
+  return ordered.map((name) => ({ name, description: descriptions[name] ?? `${name} endpoints` }));
+}
+
 function buildContract(): unknown {
   return {
     openapi: "3.1.0",
@@ -1630,6 +1660,7 @@ function buildContract(): unknown {
         "Public SDK ingest endpoint (`/api/ingest`) plus the dashboard's internal API (session-cookie authenticated). Generated from the repo's zod schemas; committed for PR-time diffing.",
     },
     servers: [{ url: "/" }],
+    tags: buildTags(),
     paths: buildPaths(manifest),
   };
 }

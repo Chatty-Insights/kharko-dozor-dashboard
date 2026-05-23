@@ -27,6 +27,14 @@
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
 
+/*
+ * Fumadocs OpenAPI preset — adds utilities for the `<APIPage>` panes
+ * (parameter fields, response tabs, schema trees). Without it, the
+ * `/documentation/api/*` virtual pages render unstyled. Lives alongside
+ * the UI preset in the same Tailwind context for the same reason.
+ */
+@import "fumadocs-openapi/css/preset.css";
+
 @custom-variant dark (&:is(.dark *));
 
 /* ── Custom data-* variants (vendored from shadcn/tailwind.css) ── */

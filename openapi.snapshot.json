@@ -10,6 +10,44 @@
       "url": "/"
     }
   ],
+  "tags": [
+    {
+      "name": "Ingest",
+      "description": "Public SDK ingestion endpoints (public-key auth)."
+    },
+    {
+      "name": "Projects",
+      "description": "Project CRUD + key lifecycle."
+    },
+    {
+      "name": "Organizations",
+      "description": "Organisation CRUD + active-org switching."
+    },
+    {
+      "name": "Members",
+      "description": "Org membership listing, role changes, self-leave + ownership transfer."
+    },
+    {
+      "name": "Invites",
+      "description": "Org-side invite lifecycle (OWNER-governed)."
+    },
+    {
+      "name": "Sessions",
+      "description": "Session list, detail, marker stream, summary KPIs, cancellation."
+    },
+    {
+      "name": "Tracked Users",
+      "description": "Tracked-user list, detail, activity, timeline, status."
+    },
+    {
+      "name": "User",
+      "description": "Signed-in user profile, OAuth/passkey links, invites, locale."
+    },
+    {
+      "name": "Cron",
+      "description": "Vercel Cron-invoked maintenance jobs."
+    }
+  ],
   "paths": {
     "/api/ingest": {
       "post": {
