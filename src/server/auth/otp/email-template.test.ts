@@ -1,16 +1,8 @@
 /**
- * Snapshot tests for the OTP email HTML builder.
- *
- * @remarks
- * One snapshot per locale. Translation edits show up in the
+ * One snapshot per locale — translation edits show up in the
  * `__snapshots__/email-template.test.ts.snap` diff alongside the JSON
- * change, so a PR reviewing new Ukrainian copy sees the rendered HTML
- * at the same time as the translation string.
- *
- * The token, `<html lang>`, and the full CSS block stay identical
- * across locales — the diff surface is just the visible copy. That
- * makes "wait, why did every language just change?" visible at review
- * time if a structural tweak accidentally lands.
+ * change. Token + `<html lang>` + CSS block stay identical across locales,
+ * so a structural tweak that touches every snapshot is loud at review.
  */
 
 import { describe, expect, it } from "vitest";

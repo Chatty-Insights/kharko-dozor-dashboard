@@ -5,10 +5,10 @@ import { useSession } from "next-auth/react";
 import { useOrganizationsQuery } from "@/api-client/organizations/queries";
 
 /**
- * Single source for the "can edit admin surfaces?" UI gate. Server twin is
- * `requireMember(..., "ADMIN")` in {@link src/server/auth/permissions.ts}. Returns
- * `false` during initial load (no flicker between hidden/shown) and reuses the
- * `useOrganizationsQuery()` cache that the global nav already warms.
+ * UI gate for "can edit admin surfaces?" — server twin is
+ * `requireMember(..., "ADMIN")` in {@link src/server/auth/permissions.ts}.
+ * Returns `false` during initial load (no flicker between hidden/shown);
+ * reuses the `useOrganizationsQuery()` cache the global nav already warms.
  */
 export function useCanManageActiveOrg(): boolean {
   const { data: session } = useSession();

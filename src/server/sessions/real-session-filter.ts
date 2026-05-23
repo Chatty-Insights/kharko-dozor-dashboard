@@ -5,9 +5,8 @@ import { MIN_REAL_SESSION_DURATION_SECONDS, MIN_REAL_SESSION_EVENTS } from "@/li
 
 /**
  * Prisma `where` fragment — spread into any `prisma.session.{findMany,count,...}`
- * call alongside other filters. Keeping the floor in a single helper means a
- * future bump to `MIN_REAL_SESSION_*` ripples through every list, count, and
- * aggregate without grep-and-replace.
+ * call alongside other filters. Lifts `MIN_REAL_SESSION_*` thresholds to
+ * the one place that consumes them.
  */
 export const REAL_SESSION_FILTER = {
   eventCount: { gte: MIN_REAL_SESSION_EVENTS },

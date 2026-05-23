@@ -1,10 +1,8 @@
 /**
  * Translator fakes for non-React paths (email builders, error-copy helpers,
- * zod error map builder) that take a `ReturnType<typeof useTranslations<Ns>>`.
- *
- * `fakeTranslator` echoes `"namespace.key"` for tests that only care a key was
- * resolved. `realTranslator` loads the actual JSON and hands off to next-intl —
- * used by email-HTML snapshot tests.
+ * zod error map builder) that take `ReturnType<typeof useTranslations<Ns>>`.
+ * `fakeTranslator` echoes `"namespace.key"` when callers only care a key
+ * resolved. `realTranslator` loads JSON and hands off to next-intl.
  */
 
 import { readFile } from "node:fs/promises";

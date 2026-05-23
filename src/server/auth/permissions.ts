@@ -84,8 +84,8 @@ export async function requireProjectMember(
 }
 
 /**
- * Centralised null check for `activeOrganizationId`. List routes scope every
- * query by it — keeping the 400 message consistent.
+ * 400 sentinel for missing `activeOrganizationId`. List routes scope every
+ * query by it.
  *
  * @throws {HttpError} 400 — no active organization.
  */

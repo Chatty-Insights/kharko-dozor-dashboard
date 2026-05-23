@@ -1,11 +1,8 @@
 /**
- * Unit tests for `buildZodErrorMap`.
- *
- * @remarks
- * Every `ZodIssueCode` branch has at least one assertion — the switch is
- * exhaustive in the source, so adding a new branch without its test here
- * is a deliberate omission that reviewers can catch. Custom refinements
- * keep their author-provided message verbatim (bottom of the file).
+ * Every `ZodIssueCode` branch has at least one assertion — the switch
+ * is exhaustive in source, so adding a branch without its test is a
+ * deliberate omission reviewers can catch. Custom refinements keep their
+ * author-provided message verbatim.
  */
 
 import { describe, expect, it } from "vitest";

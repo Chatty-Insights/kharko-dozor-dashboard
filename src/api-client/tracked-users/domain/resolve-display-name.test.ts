@@ -1,12 +1,8 @@
 /**
- * Unit tests for `resolveDisplayName`.
- *
- * @remarks
- * Walks the full 4-level priority chain plus the edge cases:
- * whitespace-only values (skipped), null traits (skipped), non-string
- * trait values (coerced via `String(x)`). Each test documents the
- * expected winner so a future reader can tell *why* a scenario resolves
- * to a particular step.
+ * Walks the full 4-level priority chain plus edge cases: whitespace-only
+ * values (skipped), null traits (skipped), non-string values (coerced via
+ * `String(x)`). Each test documents the expected winner so a reader can
+ * tell why a scenario resolves to a particular step.
  */
 
 import { describe, expect, it } from "vitest";

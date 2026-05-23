@@ -29,10 +29,10 @@ type InviteForUserGuard = {
 };
 
 /**
- * Used by `/api/user/invites/[id]/{accept,decline}`. 404 merges "missing" with
- * "already consumed" so an attacker can't enumerate invite IDs by probing 404 vs 410.
- * Side-effect — a past-TTL PENDING row is flipped to EXPIRED before throwing
- * so subsequent hits short-circuit cleanly.
+ * 404 merges "missing" with "already consumed" so an attacker can't
+ * enumerate invite IDs by probing 404 vs 410. Side-effect — a past-TTL
+ * PENDING row flips to EXPIRED before throwing so subsequent hits
+ * short-circuit cleanly.
  */
 export async function assertInviteUsableForUser(
   invite: InviteForUserGuard | null,

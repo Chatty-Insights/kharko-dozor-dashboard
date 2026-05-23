@@ -1,13 +1,9 @@
 /**
- * Unit smoke for `generateApiKey`.
- *
- * @remarks
- * Trivial body, but the format invariant (`dp_` prefix, 32-hex body) is
- * the contract `maskApiKey` depends on + the parser at
- * `POST /api/ingest::withPublicKey`. A regression in `randomBytes(16)`
- * or a fat-finger in the template string silently breaks every
- * downstream SDK. `fast-check` isn't needed here — `randomBytes` is
- * Node's CSPRNG, cryptographic quality is someone else's test budget.
+ * Format invariant (`dp_` + 32-hex body) is the contract `maskApiKey` and
+ * `POST /api/ingest::withPublicKey` parse against — a fat-finger in
+ * `randomBytes(16)` or the template string silently breaks every SDK.
+ * `fast-check` skipped: `randomBytes` is Node's CSPRNG, entropy is
+ * upstream's test budget.
  */
 
 import { describe, expect, it } from "vitest";

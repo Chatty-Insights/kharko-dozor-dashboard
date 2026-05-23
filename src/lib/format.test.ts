@@ -1,11 +1,7 @@
 /**
- * Unit tests for the locale-aware formatters used across the dashboard.
- *
- * @remarks
- * Covers the six exports of `format.ts`. Locale-specific expectations are
- * asserted against concrete CLDR output where the visible difference
- * matters for UX (date order, thousands separator, role label), and
- * against the pluralised ICU key for duration.
+ * Locale-specific expectations asserted against concrete CLDR output where
+ * the visible difference matters for UX (date order, thousands separator,
+ * role label) — and against the pluralised ICU key for duration.
  */
 
 import { describe, expect, it } from "vitest";

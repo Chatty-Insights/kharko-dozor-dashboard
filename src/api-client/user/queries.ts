@@ -18,7 +18,7 @@ export function useUserProfileQuery() {
   return useQuery(userQueries.profile());
 }
 
-/** Suspense twin — used by the settings page shell where the profile is core content. */
+/** Suspense twin — for shells where the profile is core content. */
 export function useUserProfileSuspenseQuery() {
   return useSuspenseQuery(userQueries.profile());
 }

@@ -4,15 +4,12 @@ import { isApiError } from "@/api-client/error";
 import { assertNever } from "@/lib/assert-never";
 
 /**
- * Centralised `ApiErrorKind` → product copy used by every `error.tsx` boundary —
- * a new kind walks the compiler through every consumer via `assertNever`. `context`
- * is the already-localised noun ("User", "Replays") owned by the feature, so the
- * errors namespace doesn't re-translate it. `t` is injected because this module
- * has no `"use client"` and must not tie to the hook lifecycle.
- *
- * The `auth` branch is defensive — the global `QueryCache.onError` in
- * {@link src/lib/query-client.ts} hard-redirects to `/sign-in`, but the copy fills
- * the slim window before that lands.
+ * `ApiErrorKind` → product copy for `error.tsx` boundaries. New kinds
+ * compile through every consumer via `assertNever`. `context` is the
+ * localised noun owned by the feature; `t` is injected so this module
+ * stays free of `"use client"`. `auth` branch fills the slim window
+ * before `QueryCache.onError` in {@link src/lib/query-client.ts} lands
+ * the hard-redirect.
  */
 export type ErrorCopy = {
   title: string;

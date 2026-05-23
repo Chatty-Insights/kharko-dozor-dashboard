@@ -28,13 +28,10 @@ type CursorInfiniteOptions<T> = {
 }>;
 
 /**
- * `infiniteQueryOptions` wrapper tailored to the dashboard's cursor-pagination
- * contract (`{ data, nextCursor }`). Centralises `initialPageParam` +
- * `getNextPageParam` so feature factories only declare key + fetcher.
- *
- * Pairs with `useSuspense{Infinite}Query` in shells — `fetchNextPage()` never
- * trips the closest Suspense boundary, which is what classic `useSuspenseQuery`
- * + manual cursor state did before.
+ * `infiniteQueryOptions` wrapper for the dashboard's cursor-pagination
+ * contract (`{ data, nextCursor }`) — feature factories declare key +
+ * fetcher only. Pairs with `useSuspense{Infinite}Query` in shells so
+ * `fetchNextPage()` never trips the closest Suspense boundary.
  */
 export function cursorInfiniteQueryOptions<T>({ queryKey, fetchPage, ...rest }: CursorInfiniteOptions<T>) {
   return infiniteQueryOptions({

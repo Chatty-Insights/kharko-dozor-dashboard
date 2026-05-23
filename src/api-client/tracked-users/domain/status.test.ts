@@ -1,12 +1,8 @@
 /**
- * Unit tests for `deriveUserStatus` + `parseUserStatus`.
- *
- * @remarks
- * The `deriveUserStatus` boundary math is the kind of function where a
- * flipped `<` vs `<=` is invisible to the type system but visible to a
- * user whose last event was "2 minutes ago exactly". `fast-check`
- * property-tests the invariant that every valid input produces a bucket
- * in the declared union — no matter how wild the date.
+ * `deriveUserStatus` boundary math — a flipped `<` vs `<=` is invisible
+ * to the type system but visible to a user whose last event was "2 minutes
+ * ago exactly". `fast-check` property-tests that every valid input lands
+ * in the declared union.
  */
 
 import { describe, expect, it } from "vitest";

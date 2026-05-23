@@ -22,7 +22,7 @@ export function useUserInvitesQuery() {
   return useQuery(userInviteQueries.all());
 }
 
-/** Suspense twin — used by `organizations-settings.tsx` page shell where pending invites are core content, not a badge. */
+/** Suspense twin — for shells where pending invites are core content, not a badge. */
 export function useUserInvitesSuspenseQuery() {
   return useSuspenseQuery(userInviteQueries.all());
 }

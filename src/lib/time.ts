@@ -1,8 +1,8 @@
 /**
- * Time primitives shared between server and client. Single source so the two sides
- * can't drift (server retention cutoff vs client cache-key window). Inclusion gate:
- * a duration earns its place by being reused at least twice — this is a
- * de-duplication surface, not a calendar utility.
+ * Time primitives shared between server and client (server retention cutoff
+ * vs client cache-key window must agree). Inclusion gate: a duration earns
+ * its place by being reused at least twice — de-duplication surface, not
+ * a calendar utility.
  */
 
 export const ONE_SECOND_MS = 1_000;

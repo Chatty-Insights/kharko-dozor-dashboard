@@ -1,16 +1,8 @@
 /**
- * Unit tests for `requireMember` + `requireProjectMember`.
- *
- * @remarks
- * The RBAC source of truth. These two helpers throw `HttpError` with
- * exact status codes (403 / 404) that the API-boundary HOFs turn into
- * client responses. A regression here silently flips an allow into a
- * deny (or, worse, the other direction) without any other test on the
- * route catching it — most integration tests only assert the success
- * path. Prisma is module-mocked so the tests are pure unit + fast.
- *
- * Integration tests in Wave 3 exercise the DB-backed path end-to-end;
- * this suite is the fine-grained logic layer.
+ * RBAC fine-grained logic layer — `requireMember` + `requireProjectMember`
+ * throw `HttpError(403/404)` that the API HOFs turn into client responses.
+ * A regression silently flips allow↔deny; most integration tests assert
+ * only the success path. Prisma is module-mocked so this stays unit-fast.
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";

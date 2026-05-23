@@ -29,20 +29,11 @@ export function ProfileSection({ profile }: { profile: UserProfile }) {
   });
 
   /**
-   * Uses `mutateAsync` (not `mutate`) so `handleSubmit` sees a Promise
-   * and tracks `isSubmitting` correctly.
-   *
-   * @remarks
-   * Two knock-on effects we rely on:
-   *   1. React Hook Form drops subsequent submit invocations while the
-   *      first Promise is unresolved — the old `mutate()` call returned
-   *      void, so `handleSubmit` thought the submit finished instantly
-   *      and let double-clicks through.
-   *   2. The button's `disabled` flag adds `isSubmitting` to the mix,
-   *      which stays true until the mutation settles AND the
-   *      `onSuccess` invalidation callback finishes. That closes the
-   *      gap where `isPending === false` but the form hadn't re-synced
-   *      to the new profile yet and `isDirty` was still true.
+   * `mutateAsync` (not `mutate`) so `handleSubmit` tracks `isSubmitting` —
+   * RHF blocks resubmit until the Promise resolves (mutate() returns void
+   * → double-clicks pass through), and `disabled` via `isSubmitting` stays
+   * true until `onSuccess` invalidation finishes, closing the gap where
+   * `isPending === false` but `isDirty` is still true.
    */
   async function onSubmit(data: UpdateProfileInput) {
     await updateProfile.mutateAsync(data);

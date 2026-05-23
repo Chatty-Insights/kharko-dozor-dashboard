@@ -1,11 +1,7 @@
 /**
- * Unit tests for `maskApiKey`.
- *
- * @remarks
- * The masking rules are simple but security-relevant — a bug that widens
- * the visible slice leaks key material to logs + client payloads.
- * Property-based test via `fast-check` covers the "no more than 8 raw
- * characters ever visible" invariant across random input lengths.
+ * Security-relevant — a bug widening the visible slice leaks key material
+ * to logs + client payloads. Property test via `fast-check` covers the
+ * "≤8 raw chars ever visible" invariant across random input lengths.
  */
 
 import { describe, expect, it } from "vitest";

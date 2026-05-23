@@ -12,8 +12,8 @@ import type { TranslationValues } from "next-intl";
 import type { Locale } from "@/i18n/config";
 
 /**
- * Dot-notation keys against the full `Messages` shape. Used by `mutation.meta.successKey`
- * / `errorKey` so an invalid key is a compile error at the mutation hook, not a
+ * Dot-notation keys against the full `Messages` shape — an invalid key
+ * is a compile error at `mutation.meta.successKey` / `errorKey`, not a
  * runtime missing-translation.
  */
 export type MessageKey = NestedKeyOf<Messages>;

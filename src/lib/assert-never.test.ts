@@ -1,8 +1,7 @@
 /**
- * Unit smoke test — proves the Vitest + TS-paths pipeline works end-to-end
- * for colocated `*.test.ts` files without DB involvement. The `assertNever`
- * function itself is intentionally trivial; the point is that a single run
- * of `npm run test:unit` passes with a green dot after Wave 1.
+ * Smoke test — proves the Vitest + TS-paths pipeline runs colocated
+ * `*.test.ts` files without DB involvement. `assertNever`'s body is
+ * intentionally trivial; this is the pipeline health check.
  */
 
 import { describe, expect, it } from "vitest";

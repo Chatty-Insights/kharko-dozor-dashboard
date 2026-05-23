@@ -55,7 +55,7 @@ export async function insertInitialUrlMarker(
   try {
     pathname = new URL(metadata.url).pathname;
   } catch {
-    /* keep default */
+    // keep default
   }
 
   await tx.marker.create({

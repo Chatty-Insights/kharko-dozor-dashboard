@@ -51,7 +51,7 @@ export function formatCount(n: number, locale: Locale): string {
   return formatter.format(n);
 }
 
-/** Looks up `settings.orgs.roles.<key>.label` — single source for role display copy across chips, dropdowns, toasts, emails. */
+/** Looks up `settings.orgs.roles.<key>.label`. */
 export function formatRole(role: Role, t: RolesTranslator): string {
   const key = role.toLowerCase() as Lowercase<Role>;
   return t(`${key}.label`);

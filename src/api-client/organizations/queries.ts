@@ -26,12 +26,12 @@ export const organizationQueries = {
     }),
 };
 
-/** Classic — tolerates `data: undefined`. Used by global layout (mobile drawer, avatar dropdown) that must render before orgs land. */
+/** Classic — tolerates `data: undefined` for surfaces that must render before orgs land. */
 export function useOrganizationsQuery() {
   return useQuery(organizationQueries.all());
 }
 
-/** Suspense twin — must be inside `<Suspense>`. Used by page shells where a single page-level spinner is the desired UX. */
+/** Suspense twin — must be inside `<Suspense>`. For shells where a single page-level spinner is the desired UX. */
 export function useOrganizationsSuspenseQuery() {
   return useSuspenseQuery(organizationQueries.all());
 }
