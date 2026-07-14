@@ -158,10 +158,23 @@ describe("GET /api/cron/daily-cleanup", () => {
       sessions: number;
       trackedUsers: number;
       organizations: number;
+      vacuumedTables: number;
     };
 
     expect(response.status).toBe(200);
-    expect(summary).toEqual({ throwawaySessions: 0, invites: 0, sessions: 0, trackedUsers: 0, organizations: 0 });
+    // Delete counters are exact; `vacuumedTables` is asserted as a count (0..4) rather
+    // than a fixed value so the test doesn't couple to VACUUM behaviour under the
+    // Testcontainers adapter — the delete contract is what this case guards.
+    const { vacuumedTables, ...deleteCounters } = summary;
+    expect(deleteCounters).toEqual({
+      throwawaySessions: 0,
+      invites: 0,
+      sessions: 0,
+      trackedUsers: 0,
+      organizations: 0,
+    });
+    expect(vacuumedTables).toBeGreaterThanOrEqual(0);
+    expect(vacuumedTables).toBeLessThanOrEqual(4);
   });
 
   it("deletes throwaway sessions (eventCount < floor OR duration < floor) — keeping real ones intact", async () => {

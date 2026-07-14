@@ -267,8 +267,8 @@ DB doesn't need migration history; `db push` is faster.
 `vercel.json`). Sweeps in this order:
 
 1. Expired invites (older than `INVITE_EXPIRY_DAYS = 3` days)
-2. Sessions older than `SESSION_RETENTION_DAYS = 90` days
-3. Orphaned tracked users (no live sessions for 90 days)
+2. Sessions older than `SESSION_RETENTION_DAYS = 7` days
+3. Orphaned tracked users (no live sessions for 7 days)
 4. Empty organisations (with the `activeOrganizationId` nullify pre-step
    so users referencing them aren't orphaned)
 

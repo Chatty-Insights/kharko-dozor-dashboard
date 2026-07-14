@@ -66,9 +66,7 @@
   },
   "dateRange": {
     "today": "Oggi",
-    "7d": "Ultimi 7 giorni",
-    "30d": "Ultimi 30 giorni",
-    "90d": "Ultimi {days, plural, one {# giorno} other {# giorni}}"
+    "retention": "Ultimi {days, plural, one {# giorno} other {# giorni}}"
   },
   "detail": {
     "missingTitle": "Sessione non trovata",

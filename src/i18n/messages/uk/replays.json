@@ -66,9 +66,7 @@
   },
   "dateRange": {
     "today": "Сьогодні",
-    "7d": "Останні 7 днів",
-    "30d": "Останні 30 днів",
-    "90d": "Останні {days, plural, one {# день} few {# дні} many {# днів} other {# днів}}"
+    "retention": "Останні {days, plural, one {# день} few {# дні} many {# днів} other {# днів}}"
   },
   "detail": {
     "missingTitle": "Сесію не знайдено",

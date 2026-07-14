@@ -116,7 +116,7 @@ profile shifts them.
 typically captures 1000–3000 events, so the table grows ~10000 rows
 per active user per day on a busy product.
 
-The 90-day retention cron (see
+The 7-day retention cron (see
 [Authentication & sessions → Rate limits](/documentation/resources/authentication#rate-limits))
 is what keeps the database from compounding indefinitely.
 
@@ -127,8 +127,9 @@ The free Neon tier is **0.5 GB** of storage. Rough fits:
 - **50–100k sessions** at average size (1500 events each, ~250 bytes
   per event payload)
 - **5–10 million events** before pressure
-- **At ~1000 sessions/day** that's about 50–100 days at retention.
-  Well within the 90-day cleanup cron.
+- **At ~1000 sessions/day** the 7-day retention window holds only
+  ~7000 live sessions at steady state — a small fraction of the
+  free-tier capacity, cleared nightly by the cleanup cron.
 
 For higher traffic, Neon's paid tiers scale linearly. There's no
 soft limit in the dashboard itself — the cap is whatever your

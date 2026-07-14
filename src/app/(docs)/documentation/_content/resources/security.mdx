@@ -127,7 +127,7 @@ adapter, locale routing, and exact rate-limit constants.
 
 ### Sessions
 
-Sessions older than `SESSION_RETENTION_DAYS = 90` days are deleted by
+Sessions older than `SESSION_RETENTION_DAYS = 7` days are deleted by
 the daily cleanup cron at 03:30 UTC. The retention period is a single
 constant in `src/lib/time.ts` — change it once, redeploy, the cron
 honours the new value.
@@ -140,7 +140,7 @@ cascade-deleted too (Prisma `onDelete: Cascade`). The session is
 
 Tracked users are kept indefinitely as long as they have at least one
 session (or have been touched within the retention window). Orphans
-(no sessions for 90 days) are removed by the same daily cron.
+(no sessions for 7 days) are removed by the same daily cron.
 
 When a tracked user is deleted, their sessions are kept — Prisma
 `onDelete: SetNull` on `Session.trackedUserId` — so the recordings

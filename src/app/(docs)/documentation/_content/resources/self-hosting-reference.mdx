@@ -91,15 +91,15 @@ Order-of-magnitude:
 | 1,000        | ~1.5M      | ~400 MB       | ~1.2                            |
 | 10,000       | ~15M       | ~4 GB         | Hits free-tier cap same day     |
 
-The daily 90-day-retention cron caps total volume — at steady state
-you hold ~90 days of traffic. Beyond that the schedule clears the
+The daily 7-day-retention cron caps total volume — at steady state
+you hold ~7 days of traffic. Beyond that the schedule clears the
 oldest sessions every night.
 
-**At 1000 sessions/day** with 90-day retention, steady-state DB size
-is ~36 GB — Neon's Pro tier territory.
+**At 1000 sessions/day** with 7-day retention, steady-state DB size
+is ~2.8 GB — a small paid Neon plan.
 
-**At 100 sessions/day** with 90-day retention, steady-state is ~3.5 GB
-— still on a small paid Neon plan.
+**At 100 sessions/day** with 7-day retention, steady-state is ~280 MB
+— comfortably inside the Neon Free tier.
 
 ### When to outgrow the synchronous-write ingest
 
@@ -253,7 +253,7 @@ next:
    `EXPIRED` status). Independent step — runs first because it's
    cheap and unrelated to the rest.
 2. **Old sessions** — `Session` rows older than
-   `SESSION_RETENTION_DAYS = 90`. Cascades through Prisma's
+   `SESSION_RETENTION_DAYS = 7`. Cascades through Prisma's
    `onDelete: Cascade` to delete `EventBatch` and `Marker` children.
 3. **Orphaned tracked users** — `TrackedUser` rows whose `sessions`
    relation is empty. Often becomes non-empty post-step-2: a tracked
@@ -293,13 +293,13 @@ means a stray crawler can't trigger this anyway.
 - **Schedule**: `30 3 * * *` UTC. Vercel Cron's free Hobby plan only
   runs daily cron, which fits this rate exactly. If the schedule ever
   needs more frequency, the project moves to Vercel Pro.
-- **Session retention**: `SESSION_RETENTION_DAYS = 90` in
+- **Session retention**: `SESSION_RETENTION_DAYS = 7` in
   `src/lib/time.ts`. Single constant, change it once and the cron
   honours the new value on the next run.
 - **Invite expiry**: `INVITE_EXPIRY_DAYS = 3` (set per-invite at
   create time). The cron sweeps any past-TTL row regardless.
 
-The 90-day retention is a hard delete — no soft-delete tombstone, no
+The 7-day retention is a hard delete — no soft-delete tombstone, no
 recovery window. See [Security → Retention](/documentation/resources/security#retention)
 for the full data-lifecycle contract.
 

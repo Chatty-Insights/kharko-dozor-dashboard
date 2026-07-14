@@ -1,14 +1,13 @@
 /**
  * Unit tests for sessions `domain/` parsers — date-range math + sort options.
- * Table-driven so "today" / "7d" / "30d" / "90d" share one test body. The
- * widest preset (`90d`) is anchored to `SESSION_RETENTION_MS`, so the
+ * The widest preset (`retention`) is anchored to `SESSION_RETENTION_MS`, so the
  * assertion pulls from the same constant — flipping retention updates both
  * places in lockstep.
  */
 
 import { describe, expect, it } from "vitest";
 
-import { SESSION_RETENTION_MS, SEVEN_DAYS_MS, THIRTY_DAYS_MS } from "@/lib/time";
+import { SESSION_RETENTION_MS } from "@/lib/time";
 
 import {
   DEFAULT_SESSION_DATE_RANGE,
@@ -33,21 +32,20 @@ describe("dateRangeToFrom", () => {
     expect(from.toISOString()).toBe("2025-06-15T00:00:00.000Z");
   });
 
-  it.each<[SessionDateRange, number]>([
-    ["7d", SEVEN_DAYS_MS],
-    ["30d", THIRTY_DAYS_MS],
-    ["90d", SESSION_RETENTION_MS],
-  ])("subtracts the correct window for %s", (range, windowMs) => {
-    const from = dateRangeToFrom(range, now);
-    expect(now.getTime() - from.getTime()).toBe(windowMs);
-  });
+  it.each<[SessionDateRange, number]>([["retention", SESSION_RETENTION_MS]])(
+    "subtracts the correct window for %s",
+    (range, windowMs) => {
+      const from = dateRangeToFrom(range, now);
+      expect(now.getTime() - from.getTime()).toBe(windowMs);
+    },
+  );
 
   it("uses the runtime `now` default when omitted", () => {
     // Sanity: two back-to-back calls produce a `from` within a second of
     // each other for the non-`today` presets. Can't assert exact equality
     // because `new Date()` between the two calls may advance by ms.
-    const a = dateRangeToFrom("7d");
-    const b = dateRangeToFrom("7d");
+    const a = dateRangeToFrom("retention");
+    const b = dateRangeToFrom("retention");
     expect(Math.abs(a.getTime() - b.getTime())).toBeLessThan(1_000);
   });
 });

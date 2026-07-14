@@ -13,11 +13,11 @@ export const SEVEN_DAYS_MS = 7 * ONE_DAY_MS;
 export const THIRTY_DAYS_MS = 30 * ONE_DAY_MS;
 
 /**
- * Drives both the nightly cron's hard-delete cutoff AND the replays-list "last 90
- * days" preset label — single edit here updates both sides. Cascades to slices +
+ * Drives both the nightly cron's hard-delete cutoff AND the replays-list widest
+ * preset label — single edit here updates both sides. Cascades to slices +
  * events via `onDelete: Cascade` in the schema.
  */
-export const SESSION_RETENTION_DAYS = 90;
+export const SESSION_RETENTION_DAYS = 7;
 
 export const SESSION_RETENTION_MS = SESSION_RETENTION_DAYS * ONE_DAY_MS;
 

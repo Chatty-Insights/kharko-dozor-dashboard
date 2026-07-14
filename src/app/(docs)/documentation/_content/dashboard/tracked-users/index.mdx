@@ -115,11 +115,11 @@ stored on **your** database. No third-party processor sees it.
 The daily cleanup cron deletes a tracked user only when they have
 **zero sessions left**. The typical path is:
 
-1. The 90-day [session retention](/documentation/resources/security#retention)
+1. The 7-day [session retention](/documentation/resources/security#retention)
    deletes old sessions.
 2. A user whose every session has now been deleted shows zero on
    `_count.sessions`.
 3. The same cron sweep deletes those orphan rows.
 
-A user with at least one session newer than 90 days stays — even if
-they haven't been seen in months, they're not the orphan target.
+A user with at least one session newer than 7 days stays — even if
+they haven't been seen in weeks, they're not the orphan target.

@@ -64,7 +64,7 @@ describe("GET /api/sessions", () => {
     expect(json.data.map((s) => s.externalId)).toEqual(["alice-sess-1"]);
   });
 
-  it("date-range filter excludes sessions older than the preset window", async () => {
+  it("date-range filter excludes sessions older than the retention window", async () => {
     const alice = await createUser();
     const team = await createOrganization({ owner: alice });
     const project = await createProject({ organization: team });
@@ -78,9 +78,11 @@ describe("GET /api/sessions", () => {
 
     mockAuth.mockResolvedValue(buildSession(buildSessionUser({ id: alice.id, activeOrganizationId: team.id })));
 
+    // `retention` is the widest preset — its lower bound is `SESSION_RETENTION_DAYS`
+    // (7d), so the 35-day-old session falls outside it while the 2-day-old one stays.
     const { json } = await invokeRoute<ListResponse>(sessionsRoute.GET, {
       method: "GET",
-      url: "http://localhost/test?range=7d",
+      url: "http://localhost/test?range=retention",
     });
 
     expect(json.data.map((s) => s.externalId)).toEqual(["recent"]);

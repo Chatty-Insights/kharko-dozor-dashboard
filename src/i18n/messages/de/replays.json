@@ -66,9 +66,7 @@
   },
   "dateRange": {
     "today": "Heute",
-    "7d": "Letzte 7 Tage",
-    "30d": "Letzte 30 Tage",
-    "90d": "Letzte {days, plural, one {# Tag} other {# Tage}}"
+    "retention": "Letzte {days, plural, one {# Tag} other {# Tage}}"
   },
   "detail": {
     "missingTitle": "Sitzung nicht gefunden",

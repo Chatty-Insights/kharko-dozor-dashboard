@@ -87,7 +87,7 @@ function SessionsListShellContent() {
     [updateUrl],
   );
   const handleDateRangeChange = useCallback(
-    // Default-preset omitted from URL (no `?range=90d` noise); symmetric with sort/dir.
+    // Default-preset omitted from URL (no `?range=retention` noise); symmetric with sort/dir.
     (range: SessionDateRange) => updateUrl({ range: range === DEFAULT_SESSION_DATE_RANGE ? undefined : range }),
     [updateUrl],
   );

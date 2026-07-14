@@ -5,7 +5,7 @@ title: List & filters
 The Replays tab (`/replays`) shows every session captured by the SDK
 across the active org's projects, newest first. Sessions stay until
 they hit the [retention cutoff](/documentation/resources/security#retention)
-— 90 days by default — at which point the daily cron deletes them.
+— 7 days by default — at which point the daily cron deletes them.
 
 <Callout type="info">
   **Empty list?** No sessions land here until the SDK posts at least one batch. Fastest way to populate it without
@@ -19,7 +19,7 @@ Four cards above the list, scoped to the active org:
 
 | Card               | Source                                                                       |
 | ------------------ | ---------------------------------------------------------------------------- |
-| **Total sessions** | All sessions in the active org (so capped at ~90 days by retention)          |
+| **Total sessions** | All sessions in the active org (so capped at ~7 days by retention)           |
 | **Total duration** | `SUM(session.duration)`                                                      |
 | **Avg duration**   | `AVG(session.duration)`, rounded                                             |
 | **Active today**   | Sessions created in the **last 24 hours** (rolling window, not calendar day) |
@@ -48,7 +48,7 @@ Three filter affordances:
 
 - **Search** — free-text input, matches against session and user fields server-side.
 - **Project** — multi-select popover scoped to the active org.
-- **Date range** — popover with four presets: **Today**, **Last 7 days**, **Last 30 days**, **Last 90 days**. The default is `90d` (matches the retention window so by default you see everything that exists).
+- **Date range** — popover with two presets: **Today** and the retention-wide window, whose label tracks `SESSION_RETENTION_DAYS` (currently **Last 7 days**). The retention-wide preset is the default — its lower bound is the retention window, so by default you see everything the database still holds. Narrower fixed presets (e.g. "Last 30 days") are deliberately omitted: they'd advertise a range older than retention that no longer exists.
 
 All filters serialise into the URL as query params; default values are
 elided to keep links clean. A filtered URL is shareable — pasting it

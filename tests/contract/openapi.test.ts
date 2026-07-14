@@ -113,10 +113,12 @@ const userSessionsCursorSchema = z.object({
 });
 
 const cronCleanupSummarySchema = z.object({
+  throwawaySessions: z.number().int().nonnegative(),
   invites: z.number().int().nonnegative(),
   sessions: z.number().int().nonnegative(),
   trackedUsers: z.number().int().nonnegative(),
   organizations: z.number().int().nonnegative(),
+  vacuumedTables: z.number().int().nonnegative(),
 });
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -1599,18 +1601,20 @@ const manifest: OperationManifest[] = [
     method: "get",
     summary: "Nightly database-hygiene sweep (Vercel Cron)",
     description:
-      "Bearer-authenticated. Vercel Cron invokes this endpoint per the schedule in `vercel.json` (currently `30 3 * * *` — 03:30 UTC). Four ordered steps in one run: (1) expired invites, (2) sessions older than `SESSION_RETENTION_DAYS = 90`, (3) tracked users with zero remaining sessions, (4) organisations with zero memberships (after nullifying every `User.activeOrganizationId` that referenced them). The `GET` verb is Vercel Cron's contract — destructive-on-GET is ugly but the alternative is a wrapper that fights the platform.",
+      "Bearer-authenticated. Vercel Cron invokes this endpoint per the schedule in `vercel.json` (currently `30 3 * * *` — 03:30 UTC). Six ordered steps in one run: (1) throwaway sessions below the `MIN_REAL_SESSION_*` floor, (2) expired invites, (3) sessions older than `SESSION_RETENTION_DAYS = 7`, (4) tracked users with zero remaining sessions, (5) organisations with zero memberships (after nullifying every `User.activeOrganizationId` that referenced them), (6) `VACUUM FULL` on the churned tables to return freed disk space to the OS. The `GET` verb is Vercel Cron's contract — destructive-on-GET is ugly but the alternative is a wrapper that fights the platform.",
     auth: "cron",
     tags: ["Cron"],
     responses: {
       "200": {
-        description: "Cleanup summary — counters per entity removed",
+        description: "Cleanup summary — counters per entity removed, plus tables vacuumed",
         schema: cronCleanupSummarySchema,
         example: {
+          throwawaySessions: 8,
           invites: 4,
           sessions: 132,
           trackedUsers: 17,
           organizations: 2,
+          vacuumedTables: 4,
         },
       },
       "401": {

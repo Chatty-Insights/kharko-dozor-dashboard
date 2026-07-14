@@ -6,7 +6,5 @@ import type { SessionDateRange } from "@/api-client/sessions/domain";
  */
 export const DATE_RANGE_KEYS = {
   today: "today",
-  "7d": "7d",
-  "30d": "30d",
-  "90d": "90d",
+  retention: "retention",
 } as const satisfies Record<SessionDateRange, string>;

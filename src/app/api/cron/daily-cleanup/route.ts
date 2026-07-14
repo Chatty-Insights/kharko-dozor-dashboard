@@ -9,6 +9,46 @@ import { z } from "zod";
 const log = getLogger("cron-daily-cleanup");
 
 /**
+ * Tables reclaimed by step 6. Only the ones the delete steps churn — `EventBatch`
+ * carries the gzip blobs (99% of volume), `Session`/`Marker`/`TrackedUser` are its
+ * cascade fallout. Hardcoded identifiers (never user input) — safe to interpolate
+ * into the `VACUUM FULL` statement, which cannot take bind parameters.
+ */
+const VACUUM_TABLES = ["EventBatch", "Marker", "Session", "TrackedUser"] as const;
+
+/**
+ * Reclaim physical disk space after the delete steps.
+ *
+ * `DELETE` only marks rows dead — Postgres keeps the bloated table file and reuses
+ * its pages for future inserts, but never shrinks the file on disk. Neon's 512 MB
+ * cluster-size limit counts that physical size, so a mostly-empty table can still
+ * exceed the cap and make every `INSERT` (i.e. ingest) fail with SQLSTATE 53100.
+ * `VACUUM FULL` rewrites each table into a fresh, compact file and returns the slack
+ * to the OS — the only reclaim that moves the Neon-counted number down.
+ *
+ * Not wrapped in a transaction: `VACUUM` is illegal inside one. Each table runs in
+ * its own `$executeRawUnsafe` and its own try/catch — a lock-timeout or transient
+ * failure on one table must not abort the sweep, since the deletes already committed.
+ * A failed table just reclaims next run; the failure is logged, not swallowed.
+ *
+ * `VACUUM FULL` takes an exclusive lock for the rewrite, so a concurrent ingest can
+ * stall or 500 during it. Acceptable: the cron runs at 03:30 UTC (low traffic) and
+ * the rewrite is seconds on a retention-capped table.
+ */
+async function reclaimDiskSpace(): Promise<number> {
+  let vacuumed = 0;
+  for (const table of VACUUM_TABLES) {
+    try {
+      await prisma.$executeRawUnsafe(`VACUUM (FULL, ANALYZE) "${table}"`);
+      vacuumed += 1;
+    } catch (err) {
+      log.warn({ table, err: err instanceof Error ? err.message : String(err) }, "cron:cleanup:vacuum:failed");
+    }
+  }
+  return vacuumed;
+}
+
+/**
  * Inline — Vercel Cron reads status codes + stdout, not the JSON body, so
  * api-client doesn't need this. The parse still runs as a drift sentinel.
  */
@@ -18,6 +58,7 @@ const cronCleanupSummarySchema = z.object({
   sessions: z.number().int().nonnegative(),
   trackedUsers: z.number().int().nonnegative(),
   organizations: z.number().int().nonnegative(),
+  vacuumedTables: z.number().int().nonnegative(),
 });
 
 /**
@@ -26,11 +67,15 @@ const cronCleanupSummarySchema = z.object({
  *      init+immediate-close artifacts hidden from every user-facing list).
  *      Cascades EventBatches + Markers, freeing TrackedUser rows for step 4.
  *   2. Invites past TTL (PENDING/EXPIRED).
- *   3. Sessions older than `SESSION_RETENTION_DAYS` (cascades EventBatches + Markers).
+ *   3. Sessions older than `SESSION_RETENTION_DAYS` (7 days — cascades EventBatches + Markers).
  *   4. TrackedUsers with zero sessions (orphans after steps 1 + 3).
  *   5. Memberless orgs. Active-org pointers MUST be nulled FIRST — schema
  *      doesn't declare `onDelete: SetNull` for `User.activeOrganizationId`,
  *      so Postgres would block the delete on referenced rows.
+ *   6. `VACUUM FULL` the churned tables to return the freed disk space to the OS
+ *      (steps 1-5 only mark rows dead; the file stays bloated otherwise). Runs
+ *      last so it compacts exactly the space the deletes just freed. See
+ *      `reclaimDiskSpace` for why this is required against Neon's size limit.
  *
  * Auth — Bearer matches `CRON_SECRET`. Prod with unset secret denies every
  * call (misconfigured deploy stays safe); dev/test with unset secret opens
@@ -97,12 +142,16 @@ export async function GET(req: Request) {
     orgsDeleted = result.count;
   }
 
+  // Step 6 — reclaim disk space last, once every delete above has committed.
+  const vacuumedTables = await reclaimDiskSpace();
+
   const summary = cronCleanupSummarySchema.parse({
     throwawaySessions: throwawaySessions.count,
     invites: invites.count,
     sessions: sessions.count,
     trackedUsers: trackedUsers.count,
     organizations: orgsDeleted,
+    vacuumedTables,
   });
 
   log.info({ summary }, "cron:cleanup:summary");
