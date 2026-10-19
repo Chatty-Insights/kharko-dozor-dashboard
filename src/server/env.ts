@@ -44,6 +44,18 @@ const serverEnvSchema = z.object({
   // misconfigured prod returns 401, not a boot crash.
   CRON_SECRET: z.string().optional(),
 
+  // Chatty self-host: comma-separated email domains allowed to sign in (e.g. "chattyinsights.com").
+  // Unset = any verified email can sign in, as upstream.
+  ALLOWED_EMAIL_DOMAINS: z
+    .string()
+    .optional()
+    .transform((v) =>
+      v
+        ?.split(",")
+        .map((d) => d.trim().toLowerCase())
+        .filter(Boolean),
+    ),
+
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
 

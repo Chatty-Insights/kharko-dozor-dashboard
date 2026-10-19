@@ -1,19 +1,19 @@
 /**
- * Self-host swap point — replace `PrismaNeon` with `PrismaPg` here. No env switch
- * by design: single straight-line path beats a config nobody asked for.
+ * Chatty self-host: plain Postgres in our cluster over TCP, so `PrismaPg` instead
+ * of the upstream `PrismaNeon` (Neon's serverless driver cannot reach a vanilla Postgres).
  */
 
 import "server-only";
 import { PrismaClient } from "@/generated/prisma/client";
 import { env } from "@/server/env";
-import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
 function createPrismaClient() {
-  const adapter = new PrismaNeon({ connectionString: env.DATABASE_URL });
+  const adapter = new PrismaPg({ connectionString: env.DATABASE_URL });
   return new PrismaClient({ adapter });
 }
 
